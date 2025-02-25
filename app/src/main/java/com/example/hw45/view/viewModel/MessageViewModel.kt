@@ -1,7 +1,6 @@
 package com.example.hw45.view.viewModel
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,7 +17,7 @@ class MessageViewModel : ViewModel() {
     val messages: LiveData<List<MessageResponse>> get() = _messages
 
     private val _event = MutableLiveData<UiEvent>()
-    val event: LiveData<MessageViewModel.UiEvent> get() = _event
+    val event: LiveData<UiEvent> get() = _event
 
     sealed class UiEvent {
         data class ShowError(val message: String) : UiEvent()
@@ -40,14 +39,10 @@ class MessageViewModel : ViewModel() {
             viewModelScope.launch {
                 when (val result = repository.sendMessage(chatId, message, senderId, recieverId)) {
                     is Either.Success -> {
-                        val updatedMessages = _messages.value?.toMutableList() ?: mutableListOf()
-                        updatedMessages.add(result.success)
-                        _messages.postValue(updatedMessages)
-                        sendEvent(UiEvent.MessageSent("Message sent: ${result.success.message}"))
+                        getChat(chatId)
+                        sendEvent(UiEvent.MessageSent("Message sent: $message"))
                     }
-                    is Either.Error -> {
-                        sendEvent(UiEvent.ShowError("Failed to send message: ${result.error.message}"))
-                    }
+                    is Either.Error -> sendEvent(UiEvent.ShowError("Failed to send message: ${result.error.message}"))
                 }
             }
         }

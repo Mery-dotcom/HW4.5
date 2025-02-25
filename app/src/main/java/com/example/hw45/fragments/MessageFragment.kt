@@ -43,8 +43,13 @@ class MessageFragment : Fragment() {
     }
 
     private fun setupListeners() {
-        binding.recyclerView.adapter = adapter
-        viewModel.getChat(2101)
+        binding.button.setOnClickListener {
+            val message = binding.editText.text.toString().trim()
+            if (message.isNotEmpty()) {
+                viewModel.sendMessage(2101, message, 111, 222)
+                binding.editText.text.clear()
+            }
+        }
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.submitList(messages)
         }
@@ -67,13 +72,8 @@ class MessageFragment : Fragment() {
     }
 
     private fun init() {
-        binding.button.setOnClickListener {
-            val message = binding.editText.text.toString().trim()
-            if (message.isNotEmpty()) {
-                viewModel.sendMessage(2101, message, 1, 2)
-                binding.editText.text.clear()
-            }
-        }
+        binding.recyclerView.adapter = adapter
+        viewModel.getChat(2101)
     }
 
     private fun showUpdateDialog(message: MessageResponse) {

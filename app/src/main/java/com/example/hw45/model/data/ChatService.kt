@@ -29,11 +29,11 @@ interface ChatService {
         @Path("chatId") chatId: Int,
         @Path("messageId") messageId: Int,
         @Field("message") message: String
-    ): MessageResponse
+    )
 
     @DELETE("chat/{chatId}/message/{messageId}")
     suspend fun deleteMessage(
         @Path("chatId") chatId: Int,
         @Path("messageId") messageId: Int
-    ): MessageResponse
+    )
 }

@@ -1,5 +1,6 @@
 package com.example.hw45.model.models
 
+
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -15,8 +16,8 @@ data class MessageResponse(
     @SerialName("message")
     var message: String? = null,
 
-    @SerialName("recieverId")
-    var recieverId: String? = null,
+    @SerialName("receiverId")
+    var receiverId: String? = null,
 
     @SerialName("senderId")
     var senderId: String? = null,
