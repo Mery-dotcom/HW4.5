@@ -80,13 +80,12 @@ class MessageFragment : Fragment() {
 
     private fun init() {
         binding.recyclerView.adapter = adapter
-        viewModel.getChat(2101)
     }
 
     private fun showUpdateDialog(message: MessageResponse) {
-        val editText = EditText(requireContext()).apply { setText(message.message) }
+        val editText = EditText(requireContext())
         val builder = AlertDialog.Builder(requireContext())
-        editText.setText("Update Message")
+        editText.setText(message.message)
         builder.setView(editText)
         builder.setPositiveButton("Update") { _, _ ->
             val text = editText.text.toString().trim()

@@ -16,6 +16,7 @@ class ChatRepository @Inject constructor(
             val response = chatService.getChat(chatId)
             Either.Success(response)
         } catch (e: Exception){
+            Log.e("ChatRepository", "Error: ${e.message}", e)
             Either.Error(e)
         }
 
@@ -35,6 +36,7 @@ class ChatRepository @Inject constructor(
             val response = chatService.updateMessage(chatId, messageId, message)
             Either.Success(response)
         } catch (e: Exception) {
+            Log.e("ChatRepository", "Error: ${e.message}", e)
             Either.Error(e)
         }
 
