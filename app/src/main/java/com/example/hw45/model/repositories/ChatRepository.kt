@@ -19,29 +19,29 @@ class ChatRepository @Inject constructor(
             Either.Error(e)
         }
 
-    suspend fun sendMessage(chatId: Int, message: String, senderId: String, recieverId: String):
+    suspend fun sendMessage(chatId: Int, message: String, senderId: String, receiverId: String):
             Either<Throwable, MessageResponse> =
         try {
-            val newMessage = chatService.sendMessage(chatId, message, senderId, recieverId)
-            Either.Success(newMessage)
+            val response = chatService.sendMessage(chatId, message, senderId, receiverId)
+            Either.Success(response)
         } catch (e: Exception) {
             Log.e("ChatRepository", "Error: ${e.message}", e)
             Either.Error(e)
         }
 
     suspend fun updateMessage(chatId: Int, messageId: Int, message: String):
-            Either<Throwable, Unit> =
+            Either<Throwable, MessageResponse> =
         try {
-            chatService.updateMessage(chatId, messageId, message)
-            Either.Success(Unit)
+            val response = chatService.updateMessage(chatId, messageId, message)
+            Either.Success(response)
         } catch (e: Exception) {
             Either.Error(e)
         }
 
     suspend fun deleteMessage(chatId: Int, messageId: Int): Either<Throwable, Unit> =
         try {
-            chatService.deleteMessage(chatId, messageId)
-            Either.Success(Unit)
+            val response = chatService.deleteMessage(chatId, messageId)
+            Either.Success(response)
         } catch (e: Exception) {
             Either.Error(e)
         }

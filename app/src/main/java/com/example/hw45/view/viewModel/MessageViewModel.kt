@@ -39,9 +39,9 @@ class MessageViewModel @Inject constructor(
             }
         }
 
-    fun sendMessage(chatId: Int, message: String, senderId: String, recieverId: String) {
+    fun sendMessage(chatId: Int, message: String, senderId: String, receiverId: String) {
             viewModelScope.launch {
-                when (val result = repository.sendMessage(chatId, message, senderId, recieverId)) {
+                when (val result = repository.sendMessage(chatId, message, senderId, receiverId)) {
                     is Either.Success -> {
                         getChat(chatId)
                         sendEvent(UiEvent.MessageSent("Message sent: $message"))
@@ -55,12 +55,11 @@ class MessageViewModel @Inject constructor(
             viewModelScope.launch {
                 when (val result = repository.updateMessage(chatId, messageId, message)) {
                     is Either.Success -> {
-                        refreshChat(chatId)
+                        getChat(chatId)
                         sendEvent(UiEvent.MessageUpdated("Message updated: $message"))
                     }
-                    is Either.Error -> {
+                    is Either.Error ->
                         sendEvent(UiEvent.ShowError("Failed to update message: ${result.error.message}"))
-                    }
                 }
             }
         }
@@ -69,17 +68,16 @@ class MessageViewModel @Inject constructor(
             viewModelScope.launch {
                 when (val result = repository.deleteMessage(chatId, messageId)) {
                     is Either.Success -> {
-                        refreshChat(chatId)
+                        getChat(chatId)
                         sendEvent(UiEvent.MessageDeleted("Message deleted"))
                     }
-                    is Either.Error -> {
+                    is Either.Error ->
                         sendEvent(UiEvent.ShowError("Failed to delete message: ${result.error.message}"))
-                    }
                 }
             }
         }
 
-    private suspend fun sendEvent(event: UiEvent) {
+    private fun sendEvent(event: UiEvent) {
         _event.postValue(event)
     }
 

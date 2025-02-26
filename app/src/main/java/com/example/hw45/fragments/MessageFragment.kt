@@ -48,16 +48,17 @@ class MessageFragment : Fragment() {
     private fun setupListeners() {
         binding.button.setOnClickListener {
             val message = binding.editText.text.toString().trim()
-            if (message.isNotEmpty()) {
-                viewModel.sendMessage(2101, message, 111.toString(), 222.toString())
+            message.takeIf { it.isNotEmpty() }?.let {
+                viewModel.sendMessage(2101, message, "111", "222")
                 binding.editText.text.clear()
+                viewModel.getChat(2101)
             }
         }
         viewModel.messages.observe(viewLifecycleOwner) { messages ->
             adapter.submitList(messages)
         }
         viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(lifecycle.currentState){
+            repeatOnLifecycle(lifecycle.currentState) {
                 viewModel.event.observe(viewLifecycleOwner) { event ->
                     when (event) {
                         is MessageViewModel.UiEvent.ShowError -> showToast(event.message)
@@ -86,30 +87,30 @@ class MessageFragment : Fragment() {
     private fun showUpdateDialog(message: MessageResponse) {
         val editText = EditText(requireContext()).apply { setText(message.message) }
         val builder = AlertDialog.Builder(requireContext())
-            .setTitle("Update Message")
-            .setView(editText)
-            .setPositiveButton("Update") { _, _ ->
-                    val text = editText.text.toString().trim()
-                    if (text.isNotEmpty()) {
-                        viewModel.updateMessage(message.chatId!!, message.id!!, text)
-                    }
-                }
-            .setNegativeButton("Cancel") { dialog, _ ->
-                dialog.dismiss()
+        editText.setText("Update Message")
+        builder.setView(editText)
+        builder.setPositiveButton("Update") { _, _ ->
+            val text = editText.text.toString().trim()
+            if (text.isNotEmpty()) {
+                viewModel.updateMessage(message.chatId!!, message.id!!, text)
             }
-            builder.create().show()
+        }
+        builder.setNegativeButton("Cancel") { dialog, _ ->
+            dialog.dismiss()
+        }
+        builder.create().show()
     }
 
     private fun onLongClick(message: MessageResponse) {
-        AlertDialog.Builder(requireContext())
-        .setTitle("Delete Message")
-        .setMessage("Are you sure you want to delete this message?")
-        .setPositiveButton("Delete") { _, _ ->
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("Delete Message")
+        builder.setMessage("Are you sure you want to delete this message?")
+        builder.setPositiveButton("Delete") { _, _ ->
             viewModel.deleteMessage(message.chatId!!, message.id!!)
         }
-        .setNegativeButton("Cancel") { dialog, _ ->
+        builder.setNegativeButton("Cancel") { dialog, _ ->
             dialog.dismiss()
         }
-        .create().show()
+        builder.create().show()
     }
 }

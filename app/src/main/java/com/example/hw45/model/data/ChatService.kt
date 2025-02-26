@@ -20,7 +20,7 @@ interface ChatService {
         @Field("chatId") chatId: Int,
         @Field("message") message: String,
         @Field("senderId") senderId: String,
-        @Field("recieverId") recieverId: String
+        @Field("receiverId") receiverId: String
     ): MessageResponse
 
     @FormUrlEncoded
@@ -29,7 +29,7 @@ interface ChatService {
         @Path("chatId") chatId: Int,
         @Path("messageId") messageId: Int,
         @Field("message") message: String
-    )
+    ): MessageResponse
 
     @DELETE("chat/{chatId}/message/{messageId}")
     suspend fun deleteMessage(
