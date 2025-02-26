@@ -15,8 +15,14 @@ lifecycleViewmodelKtx = "2.8.7"
 fragmentKtx = "1.8.6"
 navigationFragmentKtx = "2.8.7"
 navigationUiKtx = "2.8.7"
+ksp = "2.1.0-1.0.29"
+hiltAndroid = "2.51.1"
+hiltAndroidCompiler = "2.51.1"
 
 [libraries]
+#Hilt // For Dependency injecting
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltAndroid" }
+hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hiltAndroidCompiler" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -33,6 +39,8 @@ androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navi
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 
 [plugins]
+#KSP plugin // kotlin annotations processor (usually need for Room | Hilt)
+devtools-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 

@@ -17,10 +17,10 @@ data class MessageResponse(
     var message: String? = null,
 
     @SerialName("receiverId")
-    var receiverId: String? = null,
+    var receiverId: Int? = null,
 
     @SerialName("senderId")
-    var senderId: String? = null,
+    var senderId: Int? = null,
 
     @SerialName("timestamp")
     var timestamp: String? = null

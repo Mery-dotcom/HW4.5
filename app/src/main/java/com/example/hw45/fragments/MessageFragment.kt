@@ -12,13 +12,16 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.example.hw45.R
 import com.example.hw45.databinding.FragmentMessageBinding
 import com.example.hw45.model.models.MessageResponse
 import com.example.hw45.view.adapters.MessageAdapters
 import com.example.hw45.view.viewModel.MessageViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MessageFragment : Fragment() {
 
     private lateinit var binding: FragmentMessageBinding
@@ -46,7 +49,7 @@ class MessageFragment : Fragment() {
         binding.button.setOnClickListener {
             val message = binding.editText.text.toString().trim()
             if (message.isNotEmpty()) {
-                viewModel.sendMessage(2101, message, 111, 222)
+                viewModel.sendMessage(2101, message, 111.toString(), 222.toString())
                 binding.editText.text.clear()
             }
         }
@@ -64,6 +67,10 @@ class MessageFragment : Fragment() {
                     }
                 }
             }
+        }
+
+        binding.ibBack.setOnClickListener {
+            findNavController().navigate(R.id.listChatFragment)
         }
     }
 

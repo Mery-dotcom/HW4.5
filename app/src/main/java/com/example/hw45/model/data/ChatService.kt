@@ -19,8 +19,8 @@ interface ChatService {
     suspend fun sendMessage(
         @Field("chatId") chatId: Int,
         @Field("message") message: String,
-        @Field("senderId") senderId: Int,
-        @Field("recieverId") recieverId: Int
+        @Field("senderId") senderId: String,
+        @Field("recieverId") recieverId: String
     ): MessageResponse
 
     @FormUrlEncoded

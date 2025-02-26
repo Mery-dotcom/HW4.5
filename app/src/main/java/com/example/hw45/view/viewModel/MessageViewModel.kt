@@ -8,11 +8,15 @@ import androidx.lifecycle.viewModelScope
 import com.example.hw45.model.core.Either
 import com.example.hw45.model.models.MessageResponse
 import com.example.hw45.model.repositories.ChatRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MessageViewModel : ViewModel() {
+@HiltViewModel
+class MessageViewModel @Inject constructor(
+    private val repository: ChatRepository
+): ViewModel() {
 
-    private val repository = ChatRepository()
     private val _messages = MutableLiveData<List<MessageResponse>>()
     val messages: LiveData<List<MessageResponse>> get() = _messages
 
@@ -35,7 +39,7 @@ class MessageViewModel : ViewModel() {
             }
         }
 
-    fun sendMessage(chatId: Int, message: String, senderId: Int, recieverId: Int) {
+    fun sendMessage(chatId: Int, message: String, senderId: String, recieverId: String) {
             viewModelScope.launch {
                 when (val result = repository.sendMessage(chatId, message, senderId, recieverId)) {
                     is Either.Success -> {
