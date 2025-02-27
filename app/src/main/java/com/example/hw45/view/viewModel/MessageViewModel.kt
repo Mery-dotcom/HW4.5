@@ -1,6 +1,7 @@
 package com.example.hw45.view.viewModel
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -52,14 +53,23 @@ class MessageViewModel @Inject constructor(
         }
 
         fun updateMessage(chatId: Int, messageId: Int, message: String) {
+            if (chatId <= 0 || messageId <= 0) {
+                Log.e("MessageViewModel", "Invalid chatId or messageId: chatId=$chatId, messageId=$messageId")
+                sendEvent(UiEvent.ShowError("Invalid chatId or messageId"))
+                return
+            }
             viewModelScope.launch {
+                Log.e("ololo", "updateMessage: $chatId, $messageId, $message", )
                 when (val result = repository.updateMessage(chatId, messageId, message)) {
                     is Either.Success -> {
+                        Log.e("ololo", "updateMessage: $chatId, $messageId, $message", )
                         getChat(chatId)
                         sendEvent(UiEvent.MessageUpdated("Message updated: $message"))
                     }
-                    is Either.Error ->
+                    is Either.Error -> {
+                        Log.e("ololo", "updateMessage: ${result.error.message}")
                         sendEvent(UiEvent.ShowError("Failed to update message: ${result.error.message}"))
+                    }
                 }
             }
         }

@@ -13,12 +13,8 @@ class MessageAdapters(
     private val longClickListener: (MessageResponse) -> Unit
 ): ListAdapter<MessageResponse, MessageAdapters.MessageViewHolder>(DuffUtilCallback()) {
 
-    class MessageViewHolder (
-        val binding: ItemMessageBinding
-    ) :
+    class MessageViewHolder (val binding: ItemMessageBinding):
         RecyclerView.ViewHolder(binding.root)
-
-
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         return MessageViewHolder(
@@ -51,6 +47,6 @@ class DuffUtilCallback : DiffUtil.ItemCallback<MessageResponse>() {
     }
 
     override fun areContentsTheSame(oldItem: MessageResponse, newItem: MessageResponse): Boolean {
-        return oldItem == newItem
+        return oldItem.message == newItem.message
     }
 }

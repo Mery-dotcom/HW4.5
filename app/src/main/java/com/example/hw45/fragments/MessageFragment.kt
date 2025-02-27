@@ -3,6 +3,7 @@ package com.example.hw45.fragments
 import android.app.AlertDialog
 import androidx.fragment.app.viewModels
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -40,9 +41,41 @@ class MessageFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupListeners()
         init()
+        updateUi()
+        loadData()
+        setupListeners()
     }
+
+    private fun init() {
+        binding.recyclerView.adapter = adapter
+    }
+
+    private fun updateUi() {
+        viewModel.messages.observe(viewLifecycleOwner) { messages ->
+            adapter.submitList(messages)
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(lifecycle.currentState) {
+                viewModel.event.observe(viewLifecycleOwner) { event ->
+                    when (event) {
+                        is MessageViewModel.UiEvent.ShowError -> showToast(event.message)
+                        is MessageViewModel.UiEvent.MessageSent -> showToast(event.message)
+                        is MessageViewModel.UiEvent.MessageUpdated -> {
+                            showToast(event.message)
+                            viewModel.getChat(2101)
+                        }
+                        is MessageViewModel.UiEvent.MessageDeleted -> showToast(event.message)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun loadData() {
+        viewModel.getChat(2101)
+    }
+
 
     private fun setupListeners() {
         binding.button.setOnClickListener {
@@ -53,50 +86,34 @@ class MessageFragment : Fragment() {
                 viewModel.getChat(2101)
             }
         }
-        viewModel.messages.observe(viewLifecycleOwner) { messages ->
-            adapter.submitList(messages)
-        }
-        viewLifecycleOwner.lifecycleScope.launch {
-            repeatOnLifecycle(lifecycle.currentState) {
-                viewModel.event.observe(viewLifecycleOwner) { event ->
-                    when (event) {
-                        is MessageViewModel.UiEvent.ShowError -> showToast(event.message)
-                        is MessageViewModel.UiEvent.MessageSent -> showToast(event.message)
-                        is MessageViewModel.UiEvent.MessageUpdated -> showToast(event.message)
-                        is MessageViewModel.UiEvent.MessageDeleted -> showToast(event.message)
-                    }
-                }
-            }
-        }
 
         binding.ibBack.setOnClickListener {
             findNavController().navigate(R.id.listChatFragment)
         }
     }
 
-    private fun showToast(message: String) {
-        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
-    }
-
-    private fun init() {
-        binding.recyclerView.adapter = adapter
-    }
-
     private fun showUpdateDialog(message: MessageResponse) {
-        val editText = EditText(requireContext())
-        val builder = AlertDialog.Builder(requireContext())
-        editText.setText(message.message)
-        builder.setView(editText)
-        builder.setPositiveButton("Update") { _, _ ->
-            val text = editText.text.toString().trim()
-            if (text.isNotEmpty()) {
-                viewModel.updateMessage(message.chatId!!, message.id!!, text)
+        val editText = EditText(requireContext()).apply {
+            setText(message.message)
+        }
+        AlertDialog.Builder(requireContext())
+            .setTitle("Update Message")
+            .setView(editText)
+            .setPositiveButton("Update") { _, _ ->
+                val text = editText.text.toString().trim()
+                if (text.isNotEmpty() && message.chatId != null && message.id != null) {
+                    Log.e("ololo", "showUpdateDialog: chatId=${message.chatId}, messageId=${message.id}, text=$text")
+                    viewModel.updateMessage(message.chatId!!, message.id!!, text)
+                } else {
+                    showToast("Invalid input")
+                    Log.e("ololo", "showUpdateDialog: Invalid input")
+                }
             }
-        }
-        builder.setNegativeButton("Cancel") { dialog, _ ->
-            dialog.dismiss()
-        }
-        builder.create().show()
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
+            .show()
     }
 
     private fun onLongClick(message: MessageResponse) {
@@ -110,5 +127,9 @@ class MessageFragment : Fragment() {
             dialog.dismiss()
         }
         builder.create().show()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
