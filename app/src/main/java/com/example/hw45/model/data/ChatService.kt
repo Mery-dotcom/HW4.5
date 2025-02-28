@@ -28,7 +28,7 @@ interface ChatService {
     suspend fun updateMessage(
         @Path("chatId") chatId: Int,
         @Path("messageId") messageId: Int,
-        @Field("message") message: String
+        @Field("newMessage") message: String
     ): MessageResponse
 
     @DELETE("chat/{chatId}/message/{messageId}")
